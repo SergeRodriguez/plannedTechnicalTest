@@ -6,10 +6,11 @@ import {
   TableHeaderRow,
   TableGroupRow,
   GroupingPanel,
-  Toolbar,
   TableEditRow,
   TableEditColumn,
-  TableFilterRow
+  TableFilterRow,
+  Toolbar,
+  DragDropProvider,
 } from '@devexpress/dx-react-grid-bootstrap4';
 
 import {
@@ -78,7 +79,8 @@ function App() {
       createRowChange: (row, value) => ({ ...row, group: value }),
     },
   ]);
-  const [filters, setFilters] = useState([{ columnName: 'group', value: '' }]);
+  const [filters, setFilters] = useState([{ columnName: '', value: '' }]);
+  const [grouping, setGrouping] = useState([{ columnName: 'group' }]);
 
 
   const commitChanges = ({ added, changed, deleted }) => {
@@ -124,21 +126,23 @@ function App() {
         columns={columns}
         getRowId={getRowId}
       >
+        <DragDropProvider />
         <SortingState
           sorting={sorting}
           onSortingChange={setSorting}
         />
-           <FilteringState
+        <FilteringState
           filters={filters}
           onFiltersChange={setFilters}
           defaultFilters={[]}
         />
-        {/* <GroupingState
-          defaultGrouping={[{ columnName: 'group' }]}
-        /> */}
+        <GroupingState
+          grouping={grouping}
+          onGroupingChange={setGrouping}
+        />
         <IntegratedSorting />
         <IntegratedFiltering columnExtensions={filteringColumnExtensions} />
-        {/* <IntegratedGrouping /> */}
+        <IntegratedGrouping />
         <EditingState
           columnExtensions={editingColumnExtensions}
           onCommitChanges={commitChanges}
@@ -148,12 +152,12 @@ function App() {
         // cellComponent={Cell}
         // rowComponent = {TableRow}
         />
-        <TableHeaderRow showSortingControls />
-        {/* <TableGroupRow /> */}
+        <TableHeaderRow showGroupingControls showSortingControls />
+        <TableGroupRow />
         <TableEditRow />
-        {/* <Toolbar />
-        <GroupingPanel showSortingControls /> */}
-           <TableFilterRow
+        <Toolbar />
+        <GroupingPanel showGroupingControls showSortingControls /> */}
+        <TableFilterRow
           showFilterSelector
           iconComponent={FilterIcon}
           messages={{ month: 'Month equals' }}
