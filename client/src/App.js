@@ -9,6 +9,7 @@ import {
   Toolbar,
   TableEditRow,
   TableEditColumn,
+  TableFilterRow
 } from '@devexpress/dx-react-grid-bootstrap4';
 
 import {
@@ -16,6 +17,8 @@ import {
   IntegratedSorting,
   GroupingState,
   IntegratedGrouping,
+  FilteringState,
+  IntegratedFiltering,
   EditingState
 } from '@devexpress/dx-react-grid';
 
@@ -31,11 +34,11 @@ const TableComponent = ({ ...restProps }) => (
 const getRowId = row => row.id;
 
 const initialArray = [
-  { firstName: "Sandra", lastName: "Sonder", group: "Las Vegas", },
-  { firstName: "Paul", lastName: "Poli", group: "Paris", },
-  { firstName: "Mark", lastName: "Marker", group: "Paris", },
-  { firstName: "Paul", lastName: "Paulizky", group: "Austin", },
-  { firstName: "Linda", lastName: "Linder", group: "Austin", }
+  { firstName: "Sandra", lastName: "Sonder", group: "Marketing", },
+  { firstName: "Paul", lastName: "Poli", group: "Marketing", },
+  { firstName: "Mark", lastName: "Marker", group: "Human Resources", },
+  { firstName: "Paul", lastName: "Paulizky", group: "Engineering", },
+  { firstName: "Linda", lastName: "Linder", group: "Management", }
 ]
 
 const initialRows = initialArray.map((row, index) => ({ ...row, id: index }))
@@ -63,6 +66,8 @@ function App() {
       createRowChange: (row, value) => ({ ...row, group: value }),
     },
   ]);
+  const [filters, setFilters] = useState([{ columnName: 'group', value: '' }]);
+
 
   const commitChanges = ({ added, changed, deleted }) => {
     let changedRows;
@@ -97,11 +102,16 @@ function App() {
           sorting={sorting}
           onSortingChange={setSorting}
         />
-          <GroupingState
-          defaultGrouping={[{ columnName: 'group' }]}
+           <FilteringState
+          filters={filters}
+          onFiltersChange={setFilters}
         />
+        {/* <GroupingState
+          defaultGrouping={[{ columnName: 'group' }]}
+        /> */}
         <IntegratedSorting />
-        <IntegratedGrouping />
+        <IntegratedFiltering />
+        {/* <IntegratedGrouping /> */}
         <EditingState
           columnExtensions={editingColumnExtensions}
           onCommitChanges={commitChanges}
@@ -112,10 +122,11 @@ function App() {
         // rowComponent = {TableRow}
         />
         <TableHeaderRow showSortingControls />
-        <TableGroupRow />
+        {/* <TableGroupRow /> */}
         <TableEditRow />
-        <Toolbar />
-        <GroupingPanel showSortingControls />
+        {/* <Toolbar />
+        <GroupingPanel showSortingControls /> */}
+        <TableFilterRow />
         <TableEditColumn showAddCommand showEditCommand showDeleteCommand />
       </Grid>
     </div>
