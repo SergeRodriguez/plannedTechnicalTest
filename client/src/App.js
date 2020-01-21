@@ -1,12 +1,20 @@
 import React, { useState } from 'react';
 // import './App.css';
-import { Grid, Table, TableHeaderRow } from '@devexpress/dx-react-grid-bootstrap4';
+import {
+  Grid,
+  Table,
+  TableHeaderRow,
+  TableEditRow,
+  TableEditColumn,
+} from '@devexpress/dx-react-grid-bootstrap4';
+
 import {
   SortingState,
   IntegratedSorting,
+  EditingState
 } from '@devexpress/dx-react-grid';
-import '@devexpress/dx-react-grid-bootstrap4/dist/dx-react-grid-bootstrap4.css';
 
+import '@devexpress/dx-react-grid-bootstrap4/dist/dx-react-grid-bootstrap4.css';
 
 const TableComponent = ({ ...restProps }) => (
   <Table.Table
@@ -15,89 +23,88 @@ const TableComponent = ({ ...restProps }) => (
   />
 );
 
-const HighlightedCell = ({ value, style, ...restProps }) => {
-  console.log("value >>>>>>>", value)
-  return (
-  <Table.Cell
-    {...restProps}
-    style={{
-      backgroundColor: value === "Paris" ? 'red' : undefined,
-      ...style,
-    }}
-  >
-    <span
-      style={{
-        color: value === "Paris" ? 'white' : undefined,
-      }}
-    >
-      {value}
-    </span>
-  </Table.Cell>
-)};
+const getRowId = row => row.id;
 
-const Cell = (props) => {
-  const { column } = props;
-  if (column.name === 'group') {
-    return <HighlightedCell {...props} />;
-  }
-  return <Table.Cell {...props} />;
-};
+const initialArray = [
+  { firstName: "Sandra", lastName: "Sonder", group: "Las Vegas", },
+  { firstName: "Paul", lastName: "Poli", group: "Paris", },
+  { firstName: "Mark", lastName: "Marker", group: "Paris", },
+  { firstName: "Paul", lastName: "Paulizky", group: "Austin", },
+  { firstName: "Linda", lastName: "Linder", group: "Austin", }
+]
 
-const styles = {
-  sandra: {
-    backgroundColor: '#f5f5f5',
-  },
-  paul: {
-    backgroundColor: '#a2e2a4',
-  },
-  mark: {
-    backgroundColor: '#b3e5fc',
-  }
-};
-const TableRow = ({ row, ...restProps }) => (
-  <Table.Row
-    {...restProps}
-    // eslint-disable-next-line no-alert
-    onClick={() => alert(JSON.stringify(row))}
-    style={{
-      cursor: 'pointer',
-      ...styles[row.name.toLowerCase()],
-    }}
-  />
-);
+const initialRows = initialArray.map((row, index) => ({ ...row, id: index }))
+
 function App() {
 
   const [columns] = useState([
-    { name: "name", title: "Name" },
-    { name: "group", title: "Group" }
+    { name: "firstName", title: "First Name" },
+    { name: "lastName", title: "Last Name" },
+    { name: "group", title: "Group" },
   ]);
-  const [rows] = useState([
-    { name: "Sandra", group: "Las Vegas", },
-    { name: "Paul", group: "Paris", },
-    { name: "Mark", group: "Paris", },
-    { name: "Paul", group: "Paris", },
-    { name: "Linda", group: "Austin", }
-  ]);
+  const [rows, setRows] = useState(initialRows);
   const [sorting, setSorting] = useState([{ columnName: '', direction: 'asc' }]);
+  const [editingColumnExtensions] = useState([
+    {
+      columnName: 'firstName',
+      createRowChange: (row, value) => ({ ...row, firstName: value }),
+    },
+    {
+      columnName: 'lastName',
+      createRowChange: (row, value) => ({ ...row, lastName: value }),
+    },
+    {
+      columnName: 'group',
+      createRowChange: (row, value) => ({ ...row, group: value }),
+    },
+  ]);
 
+  const commitChanges = ({ added, changed, deleted }) => {
+    let changedRows;
+    if (added) {
+      const startingAddedId = rows.length > 0 ? rows[rows.length - 1].id + 1 : 0;
+      changedRows = [
+        ...rows,
+        ...added.map((row, index) => ({
+          id: startingAddedId + index,
+          ...row,
+        })),
+      ];
+    }
+    if (changed) {
+      changedRows = rows.map(row => (changed[row.id] ? { ...row, ...changed[row.id] } : row));
+    }
+    if (deleted) {
+      const deletedSet = new Set(deleted);
+      changedRows = rows.filter(row => !deletedSet.has(row.id));
+    }
+    setRows(changedRows);
+  };
 
   return (
     <div className="card">
       <Grid
         rows={rows}
         columns={columns}
+        getRowId={getRowId}
       >
-         <SortingState
+        <SortingState
           sorting={sorting}
           onSortingChange={setSorting}
         />
         <IntegratedSorting />
+        <EditingState
+          columnExtensions={editingColumnExtensions}
+          onCommitChanges={commitChanges}
+        />
         <Table
           tableComponent={TableComponent}
-          // cellComponent={Cell}
-          // rowComponent = {TableRow}
+        // cellComponent={Cell}
+        // rowComponent = {TableRow}
         />
         <TableHeaderRow showSortingControls />
+        <TableEditRow />
+        <TableEditColumn showAddCommand showEditCommand showDeleteCommand />
       </Grid>
     </div>
   );
