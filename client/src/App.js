@@ -19,10 +19,22 @@ import {
   IntegratedGrouping,
   FilteringState,
   IntegratedFiltering,
-  EditingState
+  EditingState,
+  DataTypeProvider
 } from '@devexpress/dx-react-grid';
 
 import '@devexpress/dx-react-grid-bootstrap4/dist/dx-react-grid-bootstrap4.css';
+
+const FilterIcon = ({ type }) => {
+  if (type === 'month') {
+    return (
+      <span
+        className="d-block oi oi-calendar"
+      />
+    );
+  }
+  return <TableFilterRow.Icon type={type} />;
+};
 
 const TableComponent = ({ ...restProps }) => (
   <Table.Table
@@ -91,6 +103,20 @@ function App() {
     setRows(changedRows);
   };
 
+  const [filteringColumnExtensions] = useState([
+    {
+      columnName: 'saleDate',
+      predicate: (value, filter, row) => {
+        if (!filter.value.length) return true;
+        if (filter && filter.operation === 'month') {
+          const month = parseInt(value.split('-')[1], 10);
+          return month === parseInt(filter.value, 10);
+        }
+        return IntegratedFiltering.defaultPredicate(value, filter, row);
+      },
+    },
+  ]);
+
   return (
     <div className="card">
       <Grid
@@ -105,12 +131,13 @@ function App() {
            <FilteringState
           filters={filters}
           onFiltersChange={setFilters}
+          defaultFilters={[]}
         />
         {/* <GroupingState
           defaultGrouping={[{ columnName: 'group' }]}
         /> */}
         <IntegratedSorting />
-        <IntegratedFiltering />
+        <IntegratedFiltering columnExtensions={filteringColumnExtensions} />
         {/* <IntegratedGrouping /> */}
         <EditingState
           columnExtensions={editingColumnExtensions}
@@ -126,7 +153,11 @@ function App() {
         <TableEditRow />
         {/* <Toolbar />
         <GroupingPanel showSortingControls /> */}
-        <TableFilterRow />
+           <TableFilterRow
+          showFilterSelector
+          iconComponent={FilterIcon}
+          messages={{ month: 'Month equals' }}
+        />
         <TableEditColumn showAddCommand showEditCommand showDeleteCommand />
       </Grid>
     </div>
