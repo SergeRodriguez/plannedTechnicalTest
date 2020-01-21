@@ -4,6 +4,9 @@ import {
   Grid,
   Table,
   TableHeaderRow,
+  TableGroupRow,
+  GroupingPanel,
+  Toolbar,
   TableEditRow,
   TableEditColumn,
 } from '@devexpress/dx-react-grid-bootstrap4';
@@ -11,6 +14,8 @@ import {
 import {
   SortingState,
   IntegratedSorting,
+  GroupingState,
+  IntegratedGrouping,
   EditingState
 } from '@devexpress/dx-react-grid';
 
@@ -92,7 +97,11 @@ function App() {
           sorting={sorting}
           onSortingChange={setSorting}
         />
+          <GroupingState
+          defaultGrouping={[{ columnName: 'group' }]}
+        />
         <IntegratedSorting />
+        <IntegratedGrouping />
         <EditingState
           columnExtensions={editingColumnExtensions}
           onCommitChanges={commitChanges}
@@ -103,7 +112,10 @@ function App() {
         // rowComponent = {TableRow}
         />
         <TableHeaderRow showSortingControls />
+        <TableGroupRow />
         <TableEditRow />
+        <Toolbar />
+        <GroupingPanel showSortingControls />
         <TableEditColumn showAddCommand showEditCommand showDeleteCommand />
       </Grid>
     </div>
