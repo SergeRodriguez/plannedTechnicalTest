@@ -68,7 +68,8 @@ function App() {
   );
   const [rows, setRows] = useState(localStorage.getItem("rows")
   ?JSON.parse(localStorage.getItem("rows")):initialRows);
-  const [sorting, setSorting] = useState([{ columnName: '', direction: 'asc' }]);
+  const [sorting, setSorting] = useState([localStorage.getItem("sorting")
+  ?JSON.parse(localStorage.getItem("sorting")):{ columnName: '', direction: 'asc' }]);
   const [grouping, setGrouping] = useState([]);
   const [columnOrder, setColumnOrder] = useState(['name', 'email', 'group']);
 
