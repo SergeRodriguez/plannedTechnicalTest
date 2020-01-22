@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 // import './App.css';
 import {
   Grid,
@@ -8,9 +8,10 @@ import {
   GroupingPanel,
   TableEditRow,
   TableEditColumn,
-  TableFilterRow,
+  // TableFilterRow,
   Toolbar,
   DragDropProvider,
+  TableColumnReordering,
 } from '@devexpress/dx-react-grid-bootstrap4';
 
 import {
@@ -18,24 +19,24 @@ import {
   IntegratedSorting,
   GroupingState,
   IntegratedGrouping,
-  FilteringState,
-  IntegratedFiltering,
+  // FilteringState,
+  // IntegratedFiltering,
   EditingState,
   DataTypeProvider
 } from '@devexpress/dx-react-grid';
 
 import '@devexpress/dx-react-grid-bootstrap4/dist/dx-react-grid-bootstrap4.css';
 
-const FilterIcon = ({ type }) => {
-  if (type === 'month') {
-    return (
-      <span
-        className="d-block oi oi-calendar"
-      />
-    );
-  }
-  return <TableFilterRow.Icon type={type} />;
-};
+// const FilterIcon = ({ type }) => {
+//   if (type === 'month') {
+//     return (
+//       <span
+//         className="d-block oi oi-calendar"
+//       />
+//     );
+//   }
+//   return <TableFilterRow.Icon type={type} />;
+// };
 
 const TableComponent = ({ ...restProps }) => (
   <Table.Table
@@ -47,40 +48,46 @@ const TableComponent = ({ ...restProps }) => (
 const getRowId = row => row.id;
 
 const initialArray = [
-  { firstName: "Sandra", lastName: "Sonder", group: "Marketing", },
-  { firstName: "Paul", lastName: "Poli", group: "Marketing", },
-  { firstName: "Mark", lastName: "Marker", group: "Human Resources", },
-  { firstName: "Paul", lastName: "Paulizky", group: "Engineering", },
-  { firstName: "Linda", lastName: "Linder", group: "Management", }
+  { name: "Sandra Sonder", group: "Marketing", },
+  { name: "Paul Poli", group: "Marketing", },
+  { name: "Mark Marker", group: "Human Resources", },
+  { name: "Paul Paulizky", group: "Engineering", },
+  { name: "Linda Linder", group: "Management", }
 ]
 
 const initialRows = initialArray.map((row, index) => ({ ...row, id: index }))
 
 function App() {
 
-  const [columns] = useState([
-    { name: "firstName", title: "First Name" },
-    { name: "lastName", title: "Last Name" },
-    { name: "group", title: "Group" },
-  ]);
-  const [rows, setRows] = useState(initialRows);
+  const [columns] = useState(
+    [
+      { name: "name", title: "Name" },
+      { name: "email", title: "Email" },
+      { name: "group", title: "Group" },
+    ]
+  );
+  const [rows, setRows] = useState(localStorage.getItem("rows")
+  ?JSON.parse(localStorage.getItem("rows")):initialRows);
   const [sorting, setSorting] = useState([{ columnName: '', direction: 'asc' }]);
+  const [grouping, setGrouping] = useState([]);
+  const [columnOrder, setColumnOrder] = useState(['name', 'email', 'group']);
+
   const [editingColumnExtensions] = useState([
     {
-      columnName: 'firstName',
-      createRowChange: (row, value) => ({ ...row, firstName: value }),
+      columnName: 'name',
+      createRowChange: (row, value) => ({ ...row, name: value }),
     },
     {
-      columnName: 'lastName',
-      createRowChange: (row, value) => ({ ...row, lastName: value }),
+      columnName: 'email',
+      createRowChange: (row, value) => ({ ...row, email: value }),
     },
     {
       columnName: 'group',
       createRowChange: (row, value) => ({ ...row, group: value }),
     },
   ]);
-  const [filters, setFilters] = useState([{ columnName: '', value: '' }]);
-  const [grouping, setGrouping] = useState([{ columnName: 'group' }]);
+  // const [filters, setFilters] = useState([{ columnName: '', value: '' }]);
+
 
 
   const commitChanges = ({ added, changed, deleted }) => {
@@ -105,19 +112,25 @@ function App() {
     setRows(changedRows);
   };
 
-  const [filteringColumnExtensions] = useState([
-    {
-      columnName: 'saleDate',
-      predicate: (value, filter, row) => {
-        if (!filter.value.length) return true;
-        if (filter && filter.operation === 'month') {
-          const month = parseInt(value.split('-')[1], 10);
-          return month === parseInt(filter.value, 10);
-        }
-        return IntegratedFiltering.defaultPredicate(value, filter, row);
-      },
-    },
-  ]);
+  // const [filteringColumnExtensions] = useState([
+  //   {
+  //     columnName: 'saleDate',
+  //     predicate: (value, filter, row) => {
+  //       if (!filter.value.length) return true;
+  //       if (filter && filter.operation === 'month') {
+  //         const month = parseInt(value.split('-')[1], 10);
+  //         return month === parseInt(filter.value, 10);
+  //       }
+  //       return IntegratedFiltering.defaultPredicate(value, filter, row);
+  //     },
+  //   },
+  // ]);
+  useEffect(() => {
+    localStorage.setItem("rows", JSON.stringify(rows))
+    localStorage.setItem("sorting", JSON.stringify(sorting))
+    localStorage.setItem("grouping", JSON.stringify(grouping))
+    localStorage.setItem("columnOrder", JSON.stringify(columnOrder))
+  }, [rows, sorting, grouping, columnOrder]);
 
   return (
     <div className="card">
@@ -131,37 +144,41 @@ function App() {
           sorting={sorting}
           onSortingChange={setSorting}
         />
-        <FilteringState
+        {/* <FilteringState
           filters={filters}
           onFiltersChange={setFilters}
           defaultFilters={[]}
-        />
+        /> */}
         <GroupingState
           grouping={grouping}
           onGroupingChange={setGrouping}
         />
         <IntegratedSorting />
-        <IntegratedFiltering columnExtensions={filteringColumnExtensions} />
+        {/* <IntegratedFiltering columnExtensions={filteringColumnExtensions} /> */}
         <IntegratedGrouping />
         <EditingState
           columnExtensions={editingColumnExtensions}
           onCommitChanges={commitChanges}
         />
         <Table
-          tableComponent={TableComponent}
+        // tableComponent={TableComponent}
         // cellComponent={Cell}
         // rowComponent = {TableRow}
+        />
+        <TableColumnReordering
+          order={columnOrder}
+          onOrderChange={setColumnOrder}
         />
         <TableHeaderRow showGroupingControls showSortingControls />
         <TableGroupRow />
         <TableEditRow />
         <Toolbar />
-        <GroupingPanel showGroupingControls showSortingControls /> */}
-        <TableFilterRow
+        <GroupingPanel showGroupingControls showSortingControls />
+        {/* <TableFilterRow
           showFilterSelector
           iconComponent={FilterIcon}
           messages={{ month: 'Month equals' }}
-        />
+        /> */}
         <TableEditColumn showAddCommand showEditCommand showDeleteCommand />
       </Grid>
     </div>
