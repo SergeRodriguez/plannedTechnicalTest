@@ -61,7 +61,7 @@ function App() {
 
   const [columns] = useState(
     [
-      { name: "name", title: "Name" },
+      { name: "name", title: "Employee" },
       { name: "email", title: "Email" },
       { name: "group", title: "Group" },
     ]
