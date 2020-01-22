@@ -10,6 +10,7 @@ import {
   Toolbar,
   DragDropProvider,
   TableColumnReordering,
+  SearchPanel,
 } from '@devexpress/dx-react-grid-bootstrap4';
 
 import {
@@ -18,6 +19,8 @@ import {
   GroupingState,
   IntegratedGrouping,
   EditingState,
+  SearchState,
+  IntegratedFiltering
 } from '@devexpress/dx-react-grid';
 
 import '@devexpress/dx-react-grid-bootstrap4/dist/dx-react-grid-bootstrap4.css';
@@ -39,15 +42,16 @@ function App() {
   const [columns] = useState(
     [
       { name: "name", title: "Employee" },
-        { name: "email", title: "Email" },
+      { name: "email", title: "Email" },
       { name: "group", title: "Group" },
     ]
   );
   const [rows, setRows] = useState(localStorage.getItem("rows")
-  ?JSON.parse(localStorage.getItem("rows")):initialRows);
+    ? JSON.parse(localStorage.getItem("rows")) : initialRows);
   const [sorting, setSorting] = useState([{ columnName: 'group', direction: 'asc' }]);
   const [grouping, setGrouping] = useState([]);
   const [columnOrder, setColumnOrder] = useState(['name', 'email', 'group']);
+  const [searchValue, setSearchState] = useState('');
 
   const [editingColumnExtensions] = useState([
     {
@@ -117,26 +121,29 @@ function App() {
         getRowId={getRowId}
       >
         <DragDropProvider />
+
         <SortingState
           sorting={sorting}
           onSortingChange={setSorting}
         />
-        {/* <FilteringState
-          filters={filters}
-          onFiltersChange={setFilters}
-          defaultFilters={[]}
-        /> */}
+        <IntegratedSorting />
+
         <GroupingState
           grouping={grouping}
           onGroupingChange={setGrouping}
         />
-        <IntegratedSorting />
-        {/* <IntegratedFiltering columnExtensions={filteringColumnExtensions} /> */}
         <IntegratedGrouping />
+
         <EditingState
           columnExtensions={editingColumnExtensions}
           onCommitChanges={commitChanges}
         />
+
+        <SearchState
+          value={searchValue}
+          onValueChange={setSearchState}
+        />
+        <IntegratedFiltering />
         <Table
         // tableComponent={TableComponent}
         />
@@ -149,12 +156,8 @@ function App() {
         <TableEditRow />
         <Toolbar />
         <GroupingPanel showGroupingControls showSortingControls />
-        {/* <TableFilterRow
-          showFilterSelector
-          iconComponent={FilterIcon}
-          messages={{ month: 'Month equals' }}
-        /> */}
         <TableEditColumn showAddCommand showEditCommand showDeleteCommand />
+        <SearchPanel />
       </Grid>
     </div>
   );
