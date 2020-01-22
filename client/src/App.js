@@ -1,5 +1,4 @@
 import React, { useState, useEffect } from 'react';
-// import './App.css';
 import {
   Grid,
   Table,
@@ -8,7 +7,6 @@ import {
   GroupingPanel,
   TableEditRow,
   TableEditColumn,
-  // TableFilterRow,
   Toolbar,
   DragDropProvider,
   TableColumnReordering,
@@ -19,31 +17,10 @@ import {
   IntegratedSorting,
   GroupingState,
   IntegratedGrouping,
-  // FilteringState,
-  // IntegratedFiltering,
   EditingState,
-  DataTypeProvider
 } from '@devexpress/dx-react-grid';
 
 import '@devexpress/dx-react-grid-bootstrap4/dist/dx-react-grid-bootstrap4.css';
-
-// const FilterIcon = ({ type }) => {
-//   if (type === 'month') {
-//     return (
-//       <span
-//         className="d-block oi oi-calendar"
-//       />
-//     );
-//   }
-//   return <TableFilterRow.Icon type={type} />;
-// };
-
-const TableComponent = ({ ...restProps }) => (
-  <Table.Table
-    {...restProps}
-    className="table-striped"
-  />
-);
 
 const getRowId = row => row.id;
 
@@ -62,7 +39,7 @@ function App() {
   const [columns] = useState(
     [
       { name: "name", title: "Employee" },
-      { name: "email", title: "Email" },
+        { name: "email", title: "Email" },
       { name: "group", title: "Group" },
     ]
   );
@@ -162,8 +139,6 @@ function App() {
         />
         <Table
         // tableComponent={TableComponent}
-        // cellComponent={Cell}
-        // rowComponent = {TableRow}
         />
         <TableColumnReordering
           order={columnOrder}
