@@ -28,11 +28,11 @@ import '@devexpress/dx-react-grid-bootstrap4/dist/dx-react-grid-bootstrap4.css';
 const getRowId = row => row.id;
 
 const initialArray = [
-  { name: "Sandra Sonder", group: "Marketing", },
-  { name: "Paul Poli", group: "Marketing", },
-  { name: "Mark Marker", group: "Human Resources", },
-  { name: "Paul Paulizky", group: "Engineering", },
-  { name: "Linda Linder", group: "Management", }
+  { name: "Sandra Sonder", email: "sandra.sonder@planned.com", group: "Marketing", },
+  { name: "Paul Poli", email: "paul.poli@planned.com", group: "Marketing", },
+  { name: "Mark Marker", email: "mark.marker@planned.com", group: "Human Resources", },
+  { name: "Paul Paulizky", email: "paul.paulizky@planned.com", group: "Engineering", },
+  { name: "Linda Linder", email: "linda.linder@planned.com", group: "Management", }
 ]
 
 const initialRows = initialArray.map((row, index) => ({ ...row, id: index }))
@@ -46,11 +46,16 @@ function App() {
       { name: "group", title: "Group" },
     ]
   );
-  const [rows, setRows] = useState(localStorage.getItem("rows")
-    ? JSON.parse(localStorage.getItem("rows")) : initialRows);
+  const [rows, setRows] = useState(
+    localStorage.getItem("rows")
+      ? JSON.parse(localStorage.getItem("rows")) : initialRows);
+
   const [sorting, setSorting] = useState([{ columnName: 'group', direction: 'asc' }]);
+
   const [grouping, setGrouping] = useState([]);
+
   const [columnOrder, setColumnOrder] = useState(['name', 'email', 'group']);
+  
   const [searchValue, setSearchState] = useState('');
 
   const [editingColumnExtensions] = useState([
@@ -93,19 +98,6 @@ function App() {
     setRows(changedRows);
   };
 
-  // const [filteringColumnExtensions] = useState([
-  //   {
-  //     columnName: 'saleDate',
-  //     predicate: (value, filter, row) => {
-  //       if (!filter.value.length) return true;
-  //       if (filter && filter.operation === 'month') {
-  //         const month = parseInt(value.split('-')[1], 10);
-  //         return month === parseInt(filter.value, 10);
-  //       }
-  //       return IntegratedFiltering.defaultPredicate(value, filter, row);
-  //     },
-  //   },
-  // ]);
   useEffect(() => {
     localStorage.setItem("rows", JSON.stringify(rows))
     localStorage.setItem("sorting", JSON.stringify(sorting))
