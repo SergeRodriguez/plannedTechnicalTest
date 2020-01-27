@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+//importing the DevExtreme React Grid from Dev Express library (visual components)
 import {
   Grid,
   Table,
@@ -13,6 +14,7 @@ import {
   SearchPanel,
 } from '@devexpress/dx-react-grid-bootstrap4';
 
+//importing the DevExtreme React Grid from Dev Express library (functionality)
 import {
   SortingState,
   IntegratedSorting,
@@ -23,10 +25,13 @@ import {
   IntegratedFiltering
 } from '@devexpress/dx-react-grid';
 
+//importing the DevExtreme React Grid from Dev Express library (styling)
 import '@devexpress/dx-react-grid-bootstrap4/dist/dx-react-grid-bootstrap4.css';
 
+//helper function to fetch a row's id
 const getRowId = row => row.id;
 
+// mock data
 const initialArray = [
   { name: "Sandra Sonder", email: "sandra.sonder@planned.com", group: "Marketing", },
   { name: "Paul Poli", email: "paul.poli@planned.com", group: "Marketing", },
@@ -46,6 +51,7 @@ function App() {
       { name: "group", title: "Group" },
     ]
   );
+
   const [rows, setRows] = useState(
     localStorage.getItem("rows")
       ? JSON.parse(localStorage.getItem("rows")) : initialRows);
@@ -98,6 +104,8 @@ function App() {
     setRows(changedRows);
   };
 
+  // after initial render the state is saved in local storage and is updated as soon 
+  // as there is a change
   useEffect(() => {
     localStorage.setItem("rows", JSON.stringify(rows))
     localStorage.setItem("sorting", JSON.stringify(sorting))
